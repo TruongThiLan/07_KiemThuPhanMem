@@ -1,0 +1,47 @@
+:root {
+  --primary: #1e5fa8;
+  --bg-main: #f3f4f6;
+  --radius-card: 10px;
+  font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--bg-main);
+}
+
+a {
+  color: inherit;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.two-columns {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .two-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Hide native password reveal icon */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+input[type="password"]::-webkit-reveal {
+  display: none;
+}
+

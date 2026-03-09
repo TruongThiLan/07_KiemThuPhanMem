@@ -1,0 +1,22 @@
+{
+  "name": "he-thong-quan-ly-trung-chuyen",
+  "version": "1.0.0",
+  "description": "Hệ thống quản lý và điều phối lộ trình xe trung chuyển - Backend API (Node.js, Express, SQL Server)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mssql": "^12.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
