@@ -11,7 +11,6 @@ export const DispatcherLayout: React.FC<DispatcherLayoutProps> = ({
   activeSubTab = 'overview'
 }) => {
   const navigate = useNavigate();
-  const [openUserMenu, setOpenUserMenu] = React.useState(false);
 
   const handleLogout = () => {
     const ok = window.confirm('Bạn có chắc muốn đăng xuất không?');
@@ -97,9 +96,16 @@ export const DispatcherLayout: React.FC<DispatcherLayoutProps> = ({
                 width: 41,
                 height: 38,
                 background: '#1E5FA8',
-                borderRadius: 10
+                borderRadius: 10,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
-            />
+            >
+              <svg viewBox="0 0 24 24" fill="#fff" style={{ width: 24, height: 24 }}>
+                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.85 7H17.14L18.22 10H5.78L6.85 7ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16Z" />
+              </svg>
+            </div>
             <div style={{ fontSize: 20, fontWeight: 700 }}>
               <span style={{ color: '#0A3B73' }}>ben</span>
               <span style={{ color: '#F39C12' }}>xedanang</span>
@@ -107,80 +113,44 @@ export const DispatcherLayout: React.FC<DispatcherLayoutProps> = ({
               <span style={{ color: '#0A3B73' }}>vn</span>
             </div>
           </div>
-          <div style={{ position: 'relative' }}>
-            <button
-              type="button"
-              onClick={() => setOpenUserMenu((v) => !v)}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+            <img 
+              src="https://ui-avatars.com/api/?name=User&background=1E5FA8&color=fff&size=40" 
+              alt="User Avatar" 
               style={{
-                width: 36,
-                height: 36,
+                width: 40,
+                height: 40,
                 borderRadius: '50%',
-                border: '2px solid #1E5FA8',
-                background: '#FFFFFF',
+                objectFit: 'cover',
+                border: '2px solid rgba(30, 95, 168, 0.2)'
+              }}
+            />
+            
+            <button
+              onClick={handleLogout}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                cursor: 'pointer'
+                padding: 4,
+                color: '#1E293B',
+                transition: 'color 0.2s',
               }}
+              title="Đăng xuất"
+              onMouseEnter={(e) => e.currentTarget.style.color = '#e11d48'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#1E293B'}
             >
-              <span style={{ fontSize: 16, color: '#1E5FA8', fontWeight: 700 }}>U</span>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
             </button>
-            {openUserMenu && (
-              <div
-                style={{
-                  position: 'absolute',
-                  right: 0,
-                  marginTop: 8,
-                  width: 200,
-                  background: '#FFFFFF',
-                  borderRadius: 10,
-                  boxShadow: '0 8px 24px rgba(15,23,42,0.2)',
-                  border: '1px solid #E5E7EB',
-                  overflow: 'hidden',
-                  zIndex: 20
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOpenUserMenu(false);
-                    navigate('/profile');
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    border: 'none',
-                    background: '#FFFFFF',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    fontSize: 14
-                  }}
-                >
-                  Quản lý thông tin cá nhân
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOpenUserMenu(false);
-                    handleLogout();
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    border: 'none',
-                    background: '#FFFFFF',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    fontSize: 14
-                  }}
-                >
-                  Đăng xuất
-                </button>
-              </div>
-            )}
           </div>
         </header>
-
         {/* Main nav */}
         <nav
           style={{

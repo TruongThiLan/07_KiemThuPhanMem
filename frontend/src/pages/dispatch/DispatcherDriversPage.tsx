@@ -15,6 +15,9 @@ export const DispatcherDriversPage: React.FC = () => {
     const [drivers, setDrivers] = useState<Driver[]>([]);
     const [loading, setLoading] = useState(false);
     const [showAdd, setShowAdd] = useState(false);
+    const [showEdit, setShowEdit] = useState<Driver | null>(null);
+    const [showDelete, setShowDelete] = useState<Driver | null>(null);
+    const [showSuccess, setShowSuccess] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const fetchDrivers = async () => {
@@ -132,10 +135,16 @@ export const DispatcherDriversPage: React.FC = () => {
                             <div>{d.LoaiBangLai}</div>
                             <div>{d.TrangThaiTaiXe}</div>
                             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-                                <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                                <button
+                                    onClick={() => setShowEdit(d)}
+                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                >
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                 </button>
-                                <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                                <button
+                                    onClick={() => setShowDelete(d)}
+                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                >
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                 </button>
                             </div>
@@ -150,13 +159,103 @@ export const DispatcherDriversPage: React.FC = () => {
                     onSuccess={() => {
                         setShowAdd(false);
                         fetchDrivers();
+                        setShowSuccess('Thêm tài xế mới thành công');
                     }}
+                />
+            )}
+
+            {showEdit && (
+                <EditDriverModal
+                    driver={showEdit}
+                    onClose={() => setShowEdit(null)}
+                    onSuccess={() => {
+                        setShowEdit(null);
+                        fetchDrivers();
+                        setShowSuccess('Cập nhật tài xế thành công');
+                    }}
+                />
+            )}
+
+            {showDelete && (
+                <DeleteDriverModal
+                    driver={showDelete}
+                    onClose={() => setShowDelete(null)}
+                    onSuccess={() => {
+                        setShowDelete(null);
+                        fetchDrivers();
+                        setShowSuccess('Đã chuyển tài xế sang ngưng hoạt động');
+                    }}
+                />
+            )}
+
+            {showSuccess && (
+                <SuccessModal
+                    message={showSuccess}
+                    onClose={() => setShowSuccess(null)}
                 />
             )}
         </DispatcherLayout>
     );
 };
 
+// --- Shared Styles for Modals ---
+const labelStyle: React.CSSProperties = {
+    color: '#000',
+    fontSize: 20,
+    fontFamily: 'Roboto, sans-serif',
+    fontWeight: 400,
+    marginBottom: 8,
+    display: 'block'
+};
+
+const inputStyle: React.CSSProperties = {
+    width: '100%',
+    height: 57,
+    background: '#fff',
+    borderRadius: 8,
+    border: '1px solid #4A4A4A',
+    padding: '0 16px',
+    fontSize: 20,
+    fontFamily: 'Roboto, sans-serif',
+    color: '#000',
+    boxSizing: 'border-box',
+    outline: 'none'
+};
+
+const defaultBtnStyle: React.CSSProperties = {
+    flex: 1,
+    height: 48,
+    borderRadius: 8,
+    border: '1px solid #4A4A4A',
+    background: '#fff',
+    color: '#000',
+    fontSize: 20,
+    fontFamily: 'Roboto, sans-serif',
+    fontWeight: 700,
+    cursor: 'pointer'
+};
+
+const primaryBtnStyle: React.CSSProperties = {
+    flex: 1,
+    height: 48,
+    borderRadius: 8,
+    border: 'none',
+    background: '#1E5FA8',
+    color: '#fff',
+    fontSize: 20,
+    fontFamily: 'Roboto, sans-serif',
+    fontWeight: 700,
+    cursor: 'pointer'
+};
+
+const ModalOverlay: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+        {children}
+    </div>
+);
+
+
+// --- Thêm mới tài xế ---
 interface AddDriverModalProps {
     onClose: () => void;
     onSuccess: () => void;
@@ -166,137 +265,236 @@ const AddDriverModal: React.FC<AddDriverModalProps> = ({ onClose, onSuccess }) =
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [cccd, setCccd] = useState('');
-    const [licenseType, setLicenseType] = useState('');
+    const [licenseType, setLicenseType] = useState('C1');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-
         if (!name || !phone || !cccd) {
             setError('Họ tên, SĐT, CCCD là bắt buộc');
             return;
         }
-
         setLoading(true);
         try {
             await api.post('/drivers', {
-                HoTen: name,
-                SoDienThoai: phone,
-                CCCD: cccd,
-                LoaiBangLai: licenseType || null,
-                TrangThaiTaiXe: 'Chưa bắt đầu'
+                HoTen: name, SoDienThoai: phone, CCCD: cccd,
+                LoaiBangLai: licenseType || null, TrangThaiTaiXe: 'Rảnh'
             });
             onSuccess();
         } catch (err: any) {
-            setError(err?.response?.data?.message ?? 'Không thể thêm tài xế');
+            setError(err?.response?.data?.message ?? 'Cập nhật thất bại');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div
-            style={{
-                position: 'fixed',
-                inset: 0,
-                background: 'rgba(0,0,0,0.5)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 50
-            }}
-        >
-            <div
-                style={{
-                    width: 500,
-                    background: '#fff',
-                    borderRadius: 8,
-                    padding: 32,
-                    position: 'relative'
-                }}
-            >
-                <button
-                    onClick={onClose}
-                    style={{
-                        position: 'absolute',
-                        right: 20,
-                        top: 20,
-                        border: 'none',
-                        background: 'none',
-                        fontSize: 20,
-                        cursor: 'pointer',
-                        color: '#64748b'
-                    }}
-                >
-                    ✕
+        <ModalOverlay>
+            <div style={{ width: 800, background: '#fff', borderRadius: 8, position: 'relative', padding: '32px 48px' }}>
+                <button onClick={onClose} style={{ position: 'absolute', right: 24, top: 24, border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </button>
 
-                <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 24, color: '#0f172a' }}>Thêm tài xế mới</h2>
+                <h2 style={{ fontSize: 24, fontWeight: 700, fontFamily: 'Roboto, sans-serif', color: '#000', marginBottom: 32 }}>
+                    Thêm mới tài xế
+                </h2>
 
-                <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <form onSubmit={handleSave} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 48, rowGap: 24 }}>
                     <div>
-                        <label style={{ display: 'block', marginBottom: 6, fontSize: 14, color: '#334155' }}>Họ tên</label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid #cbd5e1', outline: 'none' }}
-                            placeholder="Nhập họ tên"
-                        />
+                        <label style={labelStyle}>Họ tên</label>
+                        <input type="text" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
                     </div>
                     <div>
-                        <label style={{ display: 'block', marginBottom: 6, fontSize: 14, color: '#334155' }}>Số điện thoại</label>
-                        <input
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid #cbd5e1', outline: 'none' }}
-                            placeholder="Nhập số điện thoại"
-                        />
+                        <label style={labelStyle}>Mã NV</label>
+                        <input type="text" disabled value="Hệ thống tự tạo" style={{ ...inputStyle, background: '#f8fafc', color: '#94a3b8' }} />
                     </div>
                     <div>
-                        <label style={{ display: 'block', marginBottom: 6, fontSize: 14, color: '#334155' }}>Số CCCD/CMND</label>
-                        <input
-                            type="text"
-                            value={cccd}
-                            onChange={(e) => setCccd(e.target.value)}
-                            style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid #cbd5e1', outline: 'none' }}
-                            placeholder="Nhập số CCCD"
-                        />
+                        <label style={labelStyle}>Số điện thoại</label>
+                        <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
                     </div>
                     <div>
-                        <label style={{ display: 'block', marginBottom: 6, fontSize: 14, color: '#334155' }}>Loại bằng lái</label>
-                        <input
-                            type="text"
-                            value={licenseType}
-                            onChange={(e) => setLicenseType(e.target.value)}
-                            style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid #cbd5e1', outline: 'none' }}
-                            placeholder="Nhập loại bằng lái (VD: B2, C1...)"
-                        />
+                        <label style={labelStyle}>Số CCCD/CMND</label>
+                        <input type="text" value={cccd} onChange={e => setCccd(e.target.value)} style={inputStyle} />
+                    </div>
+                    <div>
+                        <label style={labelStyle}>Loại bằng lái</label>
+                        <select value={licenseType} onChange={e => setLicenseType(e.target.value)} style={{ ...inputStyle, cursor: 'pointer', appearance: 'none', backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234A4A4A%22%20d%3D%22M287%2069.4a13.6%2013.6%200%200%200-19.3%200l-121.5%20121.5L24.7%2069.4a13.6%2013.6%200%200%200-19.3%200%2013.6%2013.6%200%200%200%200%2019.3l131.1%20131.1c5.3%205.3%2014%205.3%2019.3%200L287%2088.7a13.6%2013.6%200%200%200%200-19.3z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px top 50%', backgroundSize: '16px auto' }}>
+                            <option value="B2">B2</option>
+                            <option value="C">C</option>
+                            <option value="C1">C1</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
                     </div>
 
-                    {error && <div style={{ color: '#ef4444', fontSize: 14 }}>{error}</div>}
-
-                    <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            style={{ flex: 1, padding: '12px', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: 6, fontWeight: 500, cursor: 'pointer' }}
-                        >
-                            Hủy
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            style={{ flex: 1, padding: '12px', background: '#1E5FA8', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 500, cursor: 'pointer', opacity: loading ? 0.7 : 1 }}
-                        >
-                            {loading ? 'Đang lưu...' : 'Thêm mới'}
-                        </button>
+                    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end' }}>
+                        <button type="submit" disabled={loading} style={{ ...primaryBtnStyle, opacity: loading ? 0.7 : 1 }}>Lưu tài xế</button>
+                        <button type="button" onClick={onClose} style={defaultBtnStyle}>Hủy bỏ</button>
                     </div>
                 </form>
+                {error && <div style={{ color: '#ef4444', marginTop: 16, textAlign: 'center' }}>{error}</div>}
             </div>
-        </div>
+        </ModalOverlay>
+    );
+};
+
+// --- Chỉnh sửa tài xế ---
+interface EditDriverModalProps {
+    driver: Driver;
+    onClose: () => void;
+    onSuccess: () => void;
+}
+
+const EditDriverModal: React.FC<EditDriverModalProps> = ({ driver, onClose, onSuccess }) => {
+    const [name, setName] = useState(driver.HoTen);
+    const [phone, setPhone] = useState(driver.SoDienThoai);
+    const [cccd, setCccd] = useState(driver.CCCD);
+    const [licenseType, setLicenseType] = useState(driver.LoaiBangLai || 'C1');
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        if (!name || !phone || !cccd) {
+            setError('Họ tên, SĐT, CCCD là bắt buộc');
+            return;
+        }
+        setLoading(true);
+        try {
+            await api.put(`/drivers/${driver.MaTaiXe}`, {
+                HoTen: name, SoDienThoai: phone, CCCD: cccd, LoaiBangLai: licenseType
+            });
+            onSuccess();
+        } catch (err: any) {
+            setError(err?.response?.data?.message ?? 'Cập nhật thất bại');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <ModalOverlay>
+            <div style={{ width: 800, background: '#fff', borderRadius: 8, position: 'relative', padding: '32px 48px' }}>
+                <button onClick={onClose} style={{ position: 'absolute', right: 24, top: 24, border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </button>
+
+                <h2 style={{ fontSize: 24, fontWeight: 700, fontFamily: 'Roboto, sans-serif', color: '#000', marginBottom: 32 }}>
+                    Chỉnh sửa tài xế
+                </h2>
+
+                <form onSubmit={handleSave} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 48, rowGap: 24 }}>
+                    <div>
+                        <label style={labelStyle}>Họ tên</label>
+                        <input type="text" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
+                    </div>
+                    <div>
+                        <label style={labelStyle}>Mã NV</label>
+                        <input type="text" disabled value={`NV${String(driver.MaTaiXe).padStart(8, '0')}`} style={inputStyle} />
+                    </div>
+                    <div>
+                        <label style={labelStyle}>Số điện thoại</label>
+                        <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
+                    </div>
+                    <div>
+                        <label style={labelStyle}>CCCD/CMND</label>
+                        <input type="text" value={cccd} onChange={e => setCccd(e.target.value)} style={inputStyle} />
+                    </div>
+                    <div>
+                        <label style={labelStyle}>Loại bằng lái</label>
+                        <select value={licenseType} onChange={e => setLicenseType(e.target.value)} style={{ ...inputStyle, cursor: 'pointer', appearance: 'none', backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234A4A4A%22%20d%3D%22M287%2069.4a13.6%2013.6%200%200%200-19.3%200l-121.5%20121.5L24.7%2069.4a13.6%2013.6%200%200%200-19.3%200%2013.6%2013.6%200%200%200%200%2019.3l131.1%20131.1c5.3%205.3%2014%205.3%2019.3%200L287%2088.7a13.6%2013.6%200%200%200%200-19.3z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px top 50%', backgroundSize: '16px auto' }}>
+                            <option value="B2">B2</option>
+                            <option value="C">C</option>
+                            <option value="C1">C1</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end' }}>
+                        <button type="submit" disabled={loading} style={{ ...primaryBtnStyle, opacity: loading ? 0.7 : 1 }}>Lưu tài xế</button>
+                        <button type="button" onClick={onClose} style={defaultBtnStyle}>Hủy bỏ</button>
+                    </div>
+                </form>
+                {error && <div style={{ color: '#ef4444', marginTop: 16, textAlign: 'center' }}>{error}</div>}
+            </div>
+        </ModalOverlay>
+    );
+};
+
+// --- Xóa tài xế (Confirm Modal) ---
+interface DeleteDriverModalProps {
+    driver: Driver;
+    onClose: () => void;
+    onSuccess: () => void;
+}
+
+const DeleteDriverModal: React.FC<DeleteDriverModalProps> = ({ driver, onClose, onSuccess }) => {
+    const [loading, setLoading] = useState(false);
+
+    // Note: Since DB doesn't have an endpoint for DELETING yet, we simulate or call a soft-delete status update
+    // using PUT to "Ngưng hoạt động". Modify exactly to match API if a specific DELETE endpoint exists.
+    const handleDelete = async () => {
+        setLoading(true);
+        try {
+            await api.put(`/drivers/${driver.MaTaiXe}`, { ...driver, TrangThaiTaiXe: 'Ngưng hoạt động' });
+            onSuccess();
+        } catch (err: any) {
+            alert('Lỗi: ' + (err?.response?.data?.message || 'Không thể xóa'));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <ModalOverlay>
+            <div style={{ width: 600, background: '#fff', borderRadius: 8, padding: '48px 32px', textAlign: 'center' }}>
+                <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#D2EAFF', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '0 auto 24px' }}>
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="#1E5FA8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </div>
+
+                <h2 style={{ fontSize: 24, fontWeight: 700, fontFamily: 'Roboto, sans-serif', color: '#000', marginBottom: 48 }}>
+                    Xác nhận Xóa Tài Xế
+                </h2>
+
+                <div style={{ display: 'flex', gap: 24, padding: '0 48px', justifyContent: 'center' }}>
+                    <button onClick={handleDelete} disabled={loading} style={{ ...primaryBtnStyle, maxWidth: 220 }}>
+                        {loading ? 'Đang xử lý...' : 'Xác nhận xóa'}
+                    </button>
+                    <button onClick={onClose} style={{ ...defaultBtnStyle, maxWidth: 220 }}>
+                        Hủy
+                    </button>
+                </div>
+            </div>
+        </ModalOverlay>
+    );
+};
+
+// --- Success Notification Modal ---
+interface SuccessModalProps {
+    message: string;
+    onClose: () => void;
+}
+
+const SuccessModal: React.FC<SuccessModalProps> = ({ message, onClose }) => {
+    return (
+        <ModalOverlay>
+            <div style={{ width: 450, background: '#fff', borderRadius: 16, padding: '48px 32px', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <h2 style={{ fontSize: 24, fontWeight: 700, fontFamily: 'Roboto, sans-serif', color: '#000', marginBottom: 32 }}>
+                    Thông báo
+                </h2>
+
+                <p style={{ fontSize: 20, fontFamily: 'Roboto, sans-serif', color: '#000', marginBottom: 40 }}>
+                    {message}
+                </p>
+
+                <button onClick={onClose} style={{ ...primaryBtnStyle, maxWidth: 180, height: 50 }}>
+                    Đóng
+                </button>
+            </div>
+        </ModalOverlay>
     );
 };

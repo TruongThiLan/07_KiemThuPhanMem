@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 
@@ -7,9 +7,16 @@ export const ForgotPasswordPage: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [successData, setSuccessData] = useState<{ phoneNumber: string, expiresInSeconds: number } | null>(null);
   const navigate = useNavigate();
 
   const handleBack = () => navigate('/login');
+
+  useEffect(() => {
+    if (error) setError(null);
+    if (message) setMessage(null);
+    if (successData) setSuccessData(null);
+  }, [phone]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,15 +33,11 @@ export const ForgotPasswordPage: React.FC = () => {
       const res = await api.post('/auth/forgot-password', { phoneNumber: phone });
       const otpHint = res.data?.otp ? ` (OTP demo: ${res.data.otp})` : '';
       setMessage((res.data?.message || 'Đã gửi mã xác thực, vui lòng kiểm tra điện thoại') + otpHint);
-      // Sau khi gửi thành công, chuyển sang màn đặt mật khẩu mới
-      setTimeout(() => {
-        navigate('/reset-password', {
-          state: {
-            phoneNumber: phone,
-            expiresInSeconds: res.data?.expiresInSeconds ?? 60
-          }
-        });
-      }, 800);
+
+      setSuccessData({
+        phoneNumber: phone,
+        expiresInSeconds: res.data?.expiresInSeconds ?? 60
+      });
     } catch (err: any) {
       setError(err?.response?.data?.message ?? 'Không thể gửi mã xác thực');
     } finally {
@@ -85,9 +88,16 @@ export const ForgotPasswordPage: React.FC = () => {
               top: 112.5,
               transform: 'translateX(-50%)',
               boxShadow:
-                '0px 4px 6px -4px rgba(0,0,0,0.10), 0px 10px 15px -3px rgba(0,0,0,0.10)'
+                '0px 4px 6px -4px rgba(0,0,0,0.10), 0px 10px 15px -3px rgba(0,0,0,0.10)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
             }}
-          />
+          >
+            <svg viewBox="0 0 24 24" fill="#1E5FA8" style={{ width: 72, height: 72 }}>
+              <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.85 7H17.14L18.22 10H5.78L6.85 7ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16Z" />
+            </svg>
+          </div>
           <div
             style={{
               position: 'absolute',
@@ -199,53 +209,88 @@ export const ForgotPasswordPage: React.FC = () => {
               />
             </div>
 
-            {error && (
+            <div
+              style={{
+                maxHeight: error ? '100px' : '0',
+                opacity: error ? 1 : 0,
+                overflow: 'hidden',
+                transition: 'all 0.3s ease-in-out',
+                marginBottom: error ? 12 : 0
+              }}
+            >
               <div
                 style={{
                   background: 'rgba(248,113,113,0.2)',
                   borderRadius: 8,
                   padding: '8px 12px',
                   color: '#FEE2E2',
-                  marginBottom: 8
                 }}
               >
                 {error}
               </div>
-            )}
+            </div>
 
-            {message && (
+            <div
+              style={{
+                maxHeight: message ? '100px' : '0',
+                opacity: message ? 1 : 0,
+                overflow: 'hidden',
+                transition: 'all 0.3s ease-in-out',
+                marginBottom: message ? 12 : 0
+              }}
+            >
               <div
                 style={{
                   background: 'rgba(34,197,94,0.2)',
                   borderRadius: 8,
                   padding: '8px 12px',
                   color: '#DCFCE7',
-                  marginBottom: 8
                 }}
               >
                 {message}
               </div>
-            )}
+            </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              style={{
-                width: '100%',
-                height: 56,
-                borderRadius: 10,
-                border: 'none',
-                background: '#F39C12',
-                color: '#fff',
-                fontSize: 18,
-                fontWeight: 700,
-                cursor: 'pointer',
-                marginTop: 16,
-                opacity: loading ? 0.7 : 1
-              }}
-            >
-              {loading ? 'Đang gửi...' : 'GỬI MÃ XÁC THỰC'}
-            </button>
+            {successData ? (
+              <button
+                type="button"
+                onClick={() => navigate('/reset-password', { state: successData })}
+                style={{
+                  width: '100%',
+                  height: 56,
+                  borderRadius: 10,
+                  border: 'none',
+                  background: '#10B981',
+                  color: '#fff',
+                  fontSize: 18,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  marginTop: 16
+                }}
+              >
+                TIẾP TỤC ĐỂ NHẬP OTP
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  height: 56,
+                  borderRadius: 10,
+                  border: 'none',
+                  background: '#F39C12',
+                  color: '#fff',
+                  fontSize: 18,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  marginTop: 16,
+                  opacity: loading ? 0.7 : 1
+                }}
+              >
+                {loading ? 'Đang gửi...' : 'GỬI MÃ XÁC THỰC'}
+              </button>
+            )}
           </form>
 
           <div
