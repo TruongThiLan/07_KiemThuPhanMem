@@ -5,8 +5,8 @@ import { api } from '../api/client';
 export const ResetPasswordPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const phoneFromState = (location.state as any)?.phoneNumber as string | undefined;
-  const expiresFromState = (location.state as any)?.expiresInSeconds as number | undefined;
+  const phoneFromState = (location.state as { phoneNumber?: string, expiresInSeconds?: number })?.phoneNumber as string | undefined;
+  const expiresFromState = (location.state as { phoneNumber?: string, expiresInSeconds?: number })?.expiresInSeconds as number | undefined;
 
   const [phone, setPhone] = useState(phoneFromState || '');
   const [otp, setOtp] = useState('');
@@ -84,7 +84,7 @@ export const ResetPasswordPage: React.FC = () => {
       });
       setMessage(res.data?.message || 'Đặt lại mật khẩu thành công');
       setTimeout(() => navigate('/login'), 1000);
-    } catch (err: any) {
+    } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
       setError(err?.response?.data?.message ?? 'Không thể đặt lại mật khẩu');
     } finally {
       setLoading(false);
@@ -104,7 +104,7 @@ export const ResetPasswordPage: React.FC = () => {
       const otpHint = res.data?.otp ? ` (OTP demo: ${res.data.otp})` : '';
       setMessage((res.data?.message || 'Đã gửi mã OTP') + otpHint);
       setCountdown(res.data?.expiresInSeconds ?? 60);
-    } catch (err: any) {
+    } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
       setError(err?.response?.data?.message ?? 'Không thể gửi lại OTP');
     } finally {
       setResendLoading(false);

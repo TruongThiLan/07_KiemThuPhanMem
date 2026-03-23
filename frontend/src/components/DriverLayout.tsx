@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface DriverLayoutProps {
@@ -8,197 +8,143 @@ interface DriverLayoutProps {
 export const DriverLayout: React.FC<DriverLayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [openUserMenu, setOpenUserMenu] = React.useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = () => {
-    const ok = window.confirm('Bạn có chắc muốn đăng xuất không?');
-    if (!ok) return;
     localStorage.removeItem('user');
     sessionStorage.removeItem('user');
     navigate('/login');
   };
 
-  const tabStyle = (path: string) => {
-    const active = location.pathname.startsWith(path);
-    return {
-      padding: '12px 24px',
-      cursor: 'pointer',
-      color: active ? '#F39C12' : '#FFFFFF',
-      fontWeight: active ? 600 : 500,
-      fontSize: 15,
-      borderBottom: active ? '3px solid #F39C12' : '3px solid transparent',
-      whiteSpace: 'nowrap'
-    } as React.CSSProperties;
-  };
+  const isTabActive = (path: string) => location.pathname.startsWith(path);
 
   return (
     <div
+      className="driver-app-container layout-wrapper"
       style={{
-        position: 'relative',
-        width: '100vw',
-        minHeight: '100vh',
-        overflow: 'hidden'
+        background: '#111827', // Nền cực tối cho phần dư ngoài 1440x1024
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}
     >
-      {/* Background bến xe với độ hiển thị ~50% */}
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundImage: "url('/images/background.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.5,
-          pointerEvents: 'none',
-          zIndex: 0
-        }}
-      />
+      {/* 
+        Màn hình: fix với web browser (100% viewport)
+        Outline: rgb(74, 74, 74)
+        Font-chữ: Roboto
+      */}
+      <div className="driver-layout-container">
+        <style>
+          {`
+            .driver-app-container, .driver-app-container * {
+               font-family: 'Roboto', sans-serif;
+            }
+            .driver-tab {
+              padding: 10px 24px;
+              color: #FFFFFF; /* màu chữ: #FFFFFF */
+              font-weight: 500;
+              font-size: 15px;
+              white-space: nowrap;
+              transition: all 0.2s ease;
+              opacity: 0.85;
+              border-bottom: 2px solid transparent;
+            }
+            .driver-tab:hover {
+              color: #F39C12 !important; /* hover: #F39C12 */
+              opacity: 1 !important;
+            }
+            .driver-tab.active {
+              color: #F39C12 !important; /* sáng màu #F39C12 khi active */
+              font-weight: 700;
+              opacity: 1 !important;
+            }
+          `}
+        </style>
 
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 1,
-          width: '100%',
-          minHeight: '100vh',
-          background: 'linear-gradient(180deg, rgba(248,250,251,0.3) 0%, rgba(248,250,251,0.2) 60%, rgba(248,250,251,0.3) 100%)',
-          display: 'flex',
-          flexDirection: 'column'
-        }}
-      >
-        <header
+        {/* Nền background khôi phục */}
+        <div
           style={{
-            height: 60,
-            background: 'rgba(210,234,255,0.96)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0 32px',
-            boxShadow: '0 1px 3px rgba(15,23,42,0.12)'
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: "url('/images/background.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: 0.15,
+            pointerEvents: 'none',
+            zIndex: 0
           }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div
-              style={{
-                width: 40,
-                height: 36,
-                background: '#1E5FA8',
-                borderRadius: 10
-              }}
-            />
-            <div style={{ fontSize: 18, fontWeight: 700 }}>
-              <span style={{ color: '#0A3B73' }}>ben</span>
-              <span style={{ color: '#F39C12' }}>xedanang</span>
-              <span style={{ color: '#0A3B73' }}>.vn</span>
-            </div>
-          </div>
-          <div style={{ position: 'relative' }}>
-            <button
-              type="button"
-              onClick={() => setOpenUserMenu((v) => !v)}
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: '50%',
-                border: '2px solid #1E5FA8',
-                background: '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer'
-              }}
-            >
-              <span style={{ fontSize: 16, color: '#1E5FA8', fontWeight: 700 }}>U</span>
-            </button>
-            {openUserMenu && (
+        />
+
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <header className="driver-layout-header">
+            {/* Logo Section */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div
                 style={{
-                  position: 'absolute',
-                  right: 0,
-                  marginTop: 8,
-                  width: 200,
-                  background: '#FFFFFF',
-                  borderRadius: 10,
-                  boxShadow: '0 8px 24px rgba(15,23,42,0.2)',
-                  border: '1px solid #E5E7EB',
-                  overflow: 'hidden',
-                  zIndex: 20
+                  width: 36,
+                  height: 36,
+                  background: '#1E5FA8',
+                  borderRadius: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOpenUserMenu(false);
-                    navigate('/profile');
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    border: 'none',
-                    background: '#FFFFFF',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    fontSize: 14
-                  }}
-                >
-                  Quản lý thông tin cá nhân
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOpenUserMenu(false);
-                    handleLogout();
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    border: 'none',
-                    background: '#FFFFFF',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    fontSize: 14
-                  }}
-                >
-                  Đăng xuất
-                </button>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-1.1 0-2 .9-2 2v9c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
               </div>
-            )}
-          </div>
-        </header>
+              <div className="logo-text" style={{ fontSize: 18, fontWeight: 700 }}>
+                <span style={{ color: '#0A3B73' }}>benxedanang</span>
+                <span style={{ color: '#F39C12' }}>.vn</span>
+              </div>
+            </div>
 
-        <nav
-          style={{
-            background: '#1E5FA8',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 160,
-            padding: '6px 24px 10px',
-            overflowX: 'auto',
-            boxShadow: '0 1px 3px rgba(15,23,42,0.18)'
-          }}
-        >
-          <Link to="/driver/trips/assigned" style={{ textDecoration: 'none' }}>
-            <div style={tabStyle('/driver/trips/assigned')}>Danh sách chuyến được phân công</div>
-          </Link>
-          <Link to="/driver/trips/completed" style={{ textDecoration: 'none' }}>
-            <div style={tabStyle('/driver/trips/completed')}>Danh sách chuyến đã hoàn thành</div>
-          </Link>
-          <Link to="/driver/trips/cancelled" style={{ textDecoration: 'none' }}>
-            <div style={tabStyle('/driver/trips/cancelled')}>Danh sách chuyến đã hủy</div>
-          </Link>
-        </nav>
+            {/* User Section */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer'}} onClick={() => navigate('/profile')}>
+                <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid #fff' }} />
+              </div>
+              <button
+                onClick={() => setShowLogoutConfirm(true)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#374151', transition: 'color 0.2s' }}
+                title="Đăng xuất"
+                onMouseEnter={(e) => e.currentTarget.style.color = '#F39C12'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              </button>
+            </div>
+          </header>
 
-        <main
-          style={{
-            flex: 1,
-            padding: '24px 24px 32px',
-            maxWidth: 1300,
-            width: '100%',
-            alignSelf: 'center'
-          }}
-        >
-          {children}
-        </main>
+          <nav className="driver-layout-nav">
+            <Link to="/driver/trips/assigned" style={{ textDecoration: 'none' }}>
+              <div className={`driver-tab ${isTabActive('/driver/trips/assigned') ? 'active' : ''}`}>Danh sách chuyến được phân công</div>
+            </Link>
+            <Link to="/driver/trips/completed" style={{ textDecoration: 'none' }}>
+              <div className={`driver-tab ${isTabActive('/driver/trips/completed') ? 'active' : ''}`}>Danh sách chuyến đã hoàn thành</div>
+            </Link>
+            <Link to="/driver/trips/cancelled" style={{ textDecoration: 'none' }}>
+              <div className={`driver-tab ${isTabActive('/driver/trips/cancelled') ? 'active' : ''}`}>Danh sách chuyến đã hủy</div>
+            </Link>
+          </nav>
+
+          <main className="driver-layout-main">
+            {children}
+          </main>
+
+          {showLogoutConfirm && (
+            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ background: '#FFFFFF', padding: 24, borderRadius: 12, width: '100%', maxWidth: 400, boxShadow: '0 10px 25px rgba(0,0,0,0.2)', animation: 'fadeIn 0.2s ease-out' }}>
+                <h3 style={{ margin: '0 0 16px 0', fontSize: 18, color: '#111827', fontWeight: 600 }}>Xác nhận đăng xuất</h3>
+                <p style={{ margin: '0 0 24px 0', color: '#4B5563', fontSize: 15 }}>Bạn có chắc chắn muốn đăng xuất khỏi hệ thống không?</p>
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+                  <button onClick={() => setShowLogoutConfirm(false)} style={{ padding: '8px 16px', border: '1px solid #D1D5DB', background: '#FFFFFF', borderRadius: 6, cursor: 'pointer', fontWeight: 500, color: '#374151' }}>Hủy</button>
+                  <button onClick={handleLogout} style={{ padding: '8px 16px', border: 'none', background: '#EF4444', color: '#FFFFFF', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}>Đăng xuất</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
       </div>
     </div>
   );

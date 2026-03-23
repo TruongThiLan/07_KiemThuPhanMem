@@ -11,8 +11,8 @@ interface RouteSummary {
 }
 
 interface RouteDetail {
-  route: any;
-  stops: any[];
+  route: { TrangThaiLoTrinh?: string; MaTaiXe?: number; ThoiGianBatDau?: string; [key: string]: unknown };
+  stops: unknown[];
 }
 
 export const TrackStatusPage: React.FC = () => {
@@ -206,23 +206,29 @@ export const TrackStatusPage: React.FC = () => {
               </>
             )}
             
-            {/* Mock Map / GPS placeholder */}
+            {/* Real Map / GPS iframe */}
             <div style={{ fontWeight: 600, marginBottom: 12, color: '#111827', fontSize: 15 }}>Theo dõi vị trí (GPS)</div>
             <div
               style={{
                 borderRadius: 12,
                 background: '#F1F5F9',
-                height: 300,
+                height: 350,
                 position: 'relative',
                 overflow: 'hidden',
-                border: '1px solid #E5E7EB',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                border: '1px solid #E5E7EB'
               }}
             >
-                <img src="/map-placeholder.png" alt="Map" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                <div style={{ position: 'absolute', background: 'rgba(255,255,255,0.9)', padding: '8px 16px', borderRadius: 999, fontWeight: 600, color: '#2563EB', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <iframe
+                  title="Theo dõi vị trí"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src="https://maps.google.com/maps?q=Đường Điện Biên Phủ, Đà Nẵng, Việt Nam&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                ></iframe>
+                <div style={{ position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', background: 'rgba(255,255,255,0.95)', padding: '8px 16px', borderRadius: 999, fontWeight: 600, color: '#2563EB', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', gap: 8, zIndex: 10 }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563EB', animation: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
                     Đang di chuyển trên đường Điện Biên Phủ
                 </div>

@@ -64,7 +64,7 @@ export const RegisterPage: React.FC = () => {
       setTimeout(() => {
         navigate('/login');
       }, 1200);
-    } catch (err: any) {
+    } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
       setError(err?.response?.data?.message ?? 'Đăng ký thất bại');
     } finally {
       setLoading(false);

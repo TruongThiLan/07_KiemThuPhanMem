@@ -29,17 +29,13 @@ export const DriverTripsPage: React.FC = () => {
 
   const path = location.pathname;
   let statusFilter: string | undefined;
-  let title = 'Danh sách chuyến được phân công';
 
   if (path.includes('/completed')) {
     statusFilter = 'Hoàn thành';
-    title = 'Danh sách chuyến đã hoàn thành';
   } else if (path.includes('/cancelled')) {
     statusFilter = 'Đã hủy';
-    title = 'Danh sách chuyến đã hủy';
   } else {
     statusFilter = undefined; // tất cả cho tab được phân công
-    title = 'Danh sách chuyến được phân công';
   }
 
   const loadTrips = async () => {
@@ -69,7 +65,7 @@ export const DriverTripsPage: React.FC = () => {
         filtered = data.filter((t) => !['Đã hủy', 'Hoàn thành'].includes(t.TrangThaiLoTrinh));
       }
       setTrips(filtered);
-    } catch (err: any) {
+    } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
       setError(err?.response?.data?.message ?? 'Không tải được danh sách chuyến.');
     } finally {
       setLoading(false);
@@ -159,7 +155,7 @@ export const DriverTripsPage: React.FC = () => {
       setRejectTripId(null);
       setRejectReason('');
       await loadTrips();
-    } catch (err: any) {
+    } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
       setRejectError(err?.response?.data?.message ?? 'Không thể từ chối chuyến, vui lòng thử lại.');
     } finally {
       setRejectSaving(false);
@@ -168,20 +164,13 @@ export const DriverTripsPage: React.FC = () => {
 
   return (
     <DriverLayout>
-      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>{title}</h2>
-
       {/* Thẻ thống kê tổng quan */}
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 16,
-          marginBottom: 16
-        }}
-      >
+      <div className="stats-grid">
         <div
           style={{
-            width: 280,
+            width: '100%',
+            maxWidth: 360,
+            flex: '1 1 280px',
             minWidth: 220,
             padding: '17px 34px 26px',
             background: '#FFFFFF',
@@ -201,7 +190,9 @@ export const DriverTripsPage: React.FC = () => {
 
         <div
           style={{
-            width: 280,
+            width: '100%',
+            maxWidth: 360,
+            flex: '1 1 280px',
             minWidth: 220,
             padding: '17px 34px 26px',
             background: '#FFFFFF',
@@ -221,7 +212,9 @@ export const DriverTripsPage: React.FC = () => {
 
         <div
           style={{
-            width: 280,
+            width: '100%',
+            maxWidth: 360,
+            flex: '1 1 280px',
             minWidth: 220,
             padding: '17px 34px 26px',
             background: '#FFFFFF',
@@ -240,15 +233,7 @@ export const DriverTripsPage: React.FC = () => {
         </div>
       </div>
 
-      <div
-        style={{
-          background: '#FFFFFF',
-          borderRadius: 10,
-          border: '1px solid #E5E7EB',
-          padding: 12,
-          overflowX: 'auto'
-        }}
-      >
+      <div className="table-responsive-wrapper">
         {loading ? (
           <div>Đang tải...</div>
         ) : error ? (
@@ -260,8 +245,9 @@ export const DriverTripsPage: React.FC = () => {
               : 'Không có chuyến nào.'}
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-            <thead>
+          <div className="table-responsive-container">
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+              <thead>
               <tr style={{ background: '#EFF6FF' }}>
                 <th style={{ padding: 8, textAlign: 'left' }}>STT</th>
                 <th style={{ padding: 8, textAlign: 'left' }}>Mã chuyến</th>
@@ -408,7 +394,8 @@ export const DriverTripsPage: React.FC = () => {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
         )}
       </div>
 

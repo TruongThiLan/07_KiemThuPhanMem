@@ -41,18 +41,23 @@ export const ReportsPage: React.FC = () => {
 
         let result = mockData;
 
+        const parseDate = (dateStr: string) => {
+            const [d, m, y] = dateStr.split('-');
+            return new Date(`${y}-${m}-${d}`).getTime();
+        };
+
         if (tuNgay) {
             const [y, m, d] = tuNgay.split('-');
             if (y && m && d) {
-                const formattedDate = `${d}-${m}-${y}`;
-                result = result.filter(r => r.Ngay >= formattedDate);
+                const tuNgayTime = new Date(`${y}-${m}-${d}`).getTime();
+                result = result.filter(r => parseDate(r.Ngay) >= tuNgayTime);
             }
         }
         if (denNgay) {
             const [y, m, d] = denNgay.split('-');
             if (y && m && d) {
-                const formattedDate = `${d}-${m}-${y}`;
-                result = result.filter(r => r.Ngay <= formattedDate);
+                const denNgayTime = new Date(`${y}-${m}-${d}T23:59:59`).getTime();
+                result = result.filter(r => parseDate(r.Ngay) <= denNgayTime);
             }
         }
         if (loaiXe) result = result.filter(r => r.LoaiXe === loaiXe);
@@ -62,6 +67,39 @@ export const ReportsPage: React.FC = () => {
 
         setFilteredData(result);
         setHasSearched(true);
+    };
+
+    const handleExport = () => {
+        if (filteredData.length === 0) {
+            alert('Không có dữ liệu để xuất!');
+            return;
+        }
+
+        const headers = ['STT', 'Ngày', 'Loại xe', 'Khu vực', 'Biển số xe', 'Tên Tài Xế', 'Trạng thái', 'Số khách'];
+        
+        const csvContent = [
+            headers.join(','),
+            ...filteredData.map((r, i) => [
+                i + 1,
+                r.Ngay,
+                r.LoaiXe,
+                r.KhuVuc,
+                r.BienSoXe,
+                r.TenTaiXe,
+                r.TrangThai,
+                r.SoKhach || 0
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Bao_Cao_Van_Chuyen_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     };
 
     const handleRefresh = () => {
@@ -156,7 +194,7 @@ export const ReportsPage: React.FC = () => {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                         Xem báo cáo
                     </button>
-                    <button style={{ background: '#2563EB', color: '#fff', padding: '10px 20px', fontSize: 14, borderRadius: 8, border: 'none', fontWeight: 600, cursor: 'pointer', display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <button onClick={handleExport} style={{ background: '#2563EB', color: '#fff', padding: '10px 20px', fontSize: 14, borderRadius: 8, border: 'none', fontWeight: 600, cursor: 'pointer', display: 'flex', gap: 8, alignItems: 'center' }}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
                         Xuất file
                     </button>
