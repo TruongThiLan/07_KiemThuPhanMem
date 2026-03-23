@@ -55,7 +55,7 @@ export const AdjustRoutePage: React.FC = () => {
       setRoutes((prev) =>
         prev.map((r) => (r.MaLoTrinh === res.data.MaLoTrinh ? res.data : r))
       );
-    } catch (err: any) {
+    } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
       setError(err?.response?.data?.message ?? 'Lỗi khi lưu điều chỉnh');
     } finally {
       setSaving(false);

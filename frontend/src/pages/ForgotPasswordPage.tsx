@@ -38,7 +38,7 @@ export const ForgotPasswordPage: React.FC = () => {
         phoneNumber: phone,
         expiresInSeconds: res.data?.expiresInSeconds ?? 60
       });
-    } catch (err: any) {
+    } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
       setError(err?.response?.data?.message ?? 'Không thể gửi mã xác thực');
     } finally {
       setLoading(false);

@@ -26,7 +26,7 @@ export const DispatcherDriversPage: React.FC = () => {
         try {
             const res = await api.get<Driver[]>('/drivers');
             setDrivers(res.data);
-        } catch (err: any) {
+        } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
             setError(err?.response?.data?.message ?? 'Không thể tải danh sách tài xế');
         } finally {
             setLoading(false);
@@ -283,7 +283,7 @@ const AddDriverModal: React.FC<AddDriverModalProps> = ({ onClose, onSuccess }) =
                 LoaiBangLai: licenseType || null, TrangThaiTaiXe: 'Rảnh'
             });
             onSuccess();
-        } catch (err: any) {
+        } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
             setError(err?.response?.data?.message ?? 'Cập nhật thất bại');
         } finally {
             setLoading(false);
@@ -368,7 +368,7 @@ const EditDriverModal: React.FC<EditDriverModalProps> = ({ driver, onClose, onSu
                 HoTen: name, SoDienThoai: phone, CCCD: cccd, LoaiBangLai: licenseType
             });
             onSuccess();
-        } catch (err: any) {
+        } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
             setError(err?.response?.data?.message ?? 'Cập nhật thất bại');
         } finally {
             setLoading(false);
@@ -442,7 +442,7 @@ const DeleteDriverModal: React.FC<DeleteDriverModalProps> = ({ driver, onClose, 
         try {
             await api.put(`/drivers/${driver.MaTaiXe}`, { ...driver, TrangThaiTaiXe: 'Ngưng hoạt động' });
             onSuccess();
-        } catch (err: any) {
+        } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
             alert('Lỗi: ' + (err?.response?.data?.message || 'Không thể xóa'));
         } finally {
             setLoading(false);

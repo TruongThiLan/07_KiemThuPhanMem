@@ -22,7 +22,7 @@ export const DriversPage: React.FC = () => {
     try {
       const res = await api.get<Driver[]>('/drivers');
       setDrivers(res.data);
-    } catch (err: any) {
+    } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
       setError(err?.response?.data?.message ?? 'Không thể tải danh sách tài xế');
     } finally {
       setLoading(false);
@@ -234,7 +234,7 @@ const AddDriverModal: React.FC<AddDriverModalProps> = ({ onClose, onSuccess }) =
         TrangThaiTaiXe: 'Rảnh'
       });
       onSuccess();
-    } catch (err: any) {
+    } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
       setError(err?.response?.data?.message ?? 'Không thể thêm tài xế');
     } finally {
       setLoading(false);

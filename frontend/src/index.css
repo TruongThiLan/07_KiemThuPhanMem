@@ -8,6 +8,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -43,5 +47,441 @@ input[type="password"]::-ms-clear {
 }
 input[type="password"]::-webkit-reveal {
   display: none;
+}
+
+.plan-route-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1600px) {
+  .plan-route-container {
+    max-width: 1536px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .plan-route-container {
+    max-width: 1800px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .plan-route-container {
+    max-width: 2400px;
+  }
+}
+
+.step-progress-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1600px) {
+  .step-progress-wrapper {
+    max-width: 1000px;
+  }
+}
+
+:root {
+  --primary: #1e5fa8;
+  --bg-main: #f3f4f6;
+  --radius-card: 10px;
+  font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--bg-main);
+}
+
+a {
+  color: inherit;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.two-columns {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .two-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Hide native password reveal icon */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+input[type="password"]::-webkit-reveal {
+  display: none;
+}
+
+.plan-route-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1600px) {
+  .plan-route-container {
+    max-width: 1536px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .plan-route-container {
+    max-width: 1800px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .plan-route-container {
+    max-width: 2400px;
+  }
+}
+
+.step-progress-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1600px) {
+  .step-progress-wrapper {
+    max-width: 1000px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .step-progress-wrapper {
+    max-width: 1200px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .step-progress-wrapper {
+    max-width: 1600px;
+  }
+}
+@media (max-width: 768px) {
+  .step-progress-wrapper {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  .step-progress-wrapper > * {
+    margin: 4px;
+  }
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+@media (max-width: 1024px) {
+  .filter-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+}
+
+.table-responsive-wrapper {
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+  overflow-x: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+.table-responsive-container {
+  min-width: 960px;
+  width: 100%;
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+@media (max-width: 768px) {
+  .stats-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+@media (max-width: 640px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cards-grid-drivers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+@media (max-width: 640px) {
+  .cards-grid-drivers {
+    grid-template-columns: 1fr;
+  }
+}
+
+.confirm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+@media (max-width: 768px) {
+  .confirm-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------- Responsive Layout Classes ---------------- */
+.layout-wrapper {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.layout-bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.layout-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  background: rgba(249, 250, 251, 0.92);
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-header {
+  height: 60px;
+  background: rgba(210, 234, 255, 0.95);
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  justify-content: space-between;
+}
+
+.layout-nav {
+  height: 56px;
+  background: rgba(30, 95, 168, 0.95);
+  display: flex;
+  align-items: center;
+  overflow-x: auto; /* Enable horizontal scroll on mobile */
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Hide scrollbar for layout-nav but keep functionality */
+.layout-nav::-webkit-scrollbar {
+  display: none;
+}
+.layout-nav {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.layout-nav-tab {
+  padding: 16px 32px;
+  cursor: pointer;
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.layout-nav-tab.active {
+  color: #F39C12;
+}
+
+.layout-subnav {
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #E5E7EB;
+  padding: 16px 48px;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.layout-subnav::-webkit-scrollbar {
+  display: none;
+}
+.layout-subnav {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.layout-subnav-tab {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  background: #F3F4F6;
+  color: #364153;
+  border: none;
+}
+.layout-subnav-tab.active {
+  background: #1E5FA8;
+  color: #FFFFFF;
+}
+
+.layout-main {
+  flex: 1;
+  padding: 24px 32px;
+  max-width: 1400px;
+  width: 100%;
+  align-self: center;
+  box-sizing: border-box;
+}
+
+/* Driver Layout specifics */
+.driver-layout-container {
+  width: 100%;
+  height: 100vh;
+  background: #F1F5F9;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  outline: 1px solid rgb(74, 74, 74);
+  font-family: 'Roboto', sans-serif;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.driver-layout-header {
+  height: 60px;
+  background: #EAF3FB;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+.driver-layout-nav {
+  background: #1E5FA8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 2px 24px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.driver-layout-nav::-webkit-scrollbar {
+  display: none;
+}
+.driver-layout-nav {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.driver-layout-main {
+  flex: 1;
+  padding: 24px 32px 32px;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Mobile Media Queries for Layouts */
+@media (max-width: 768px) {
+  .layout-header, .driver-layout-header {
+    padding: 0 16px;
+  }
+  
+  .layout-header .logo-text, .driver-layout-header .logo-text {
+    font-size: 18px !important;
+  }
+
+  .layout-nav-tab {
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+
+  .layout-subnav {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .layout-subnav-tab {
+    padding: 8px 16px;
+    font-size: 14px;
+    min-width: 100px;
+  }
+
+  .layout-main, .driver-layout-main {
+    padding: 16px;
+  }
+
+  .driver-layout-nav {
+    gap: 16px;
+    padding: 2px 16px;
+    justify-content: flex-start; /* Switch from center to start for scrolling */
+  }
 }
 

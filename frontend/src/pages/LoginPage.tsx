@@ -35,7 +35,7 @@ export const LoginPage: React.FC = () => {
       } else {
         navigate('/dispatch/overview');
       }
-    } catch (err: any) {
+    } catch (error: unknown) { const err = error as { response?: { data?: { message?: string } }, message?: string };
       setError(err?.response?.data?.message ?? 'Đăng nhập thất bại');
     } finally {
       setLoading(false);
